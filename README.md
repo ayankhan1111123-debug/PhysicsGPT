@@ -1,17 +1,109 @@
-# physicsgpt
+# 📚 PhysicsGPT
 
-A new Flutter project.
+An AI-powered physics problem solver built with Flutter and Google Gemini AI.
 
-## Getting Started
+> Solve physics questions from text or images and receive clear, step-by-step explanations.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## 🚀 Features
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- 📷 Capture physics questions using the camera
+- 🖼️ Import questions from the gallery
+- 🤖 AI-powered solutions using Google Gemini
+- 📝 Step-by-step explanations
+- 🎨 Modern and clean Flutter UI
+- 🌙 Dark mode (Coming Soon)
+- 📚 Solution history (Coming Soon)
+- 📄 Export solutions to PDF (Planned)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 📱 Screenshots
+
+> Screenshots will be added as the app is developed.
+
+---
+
+## 🛠️ Tech Stack
+
+- Flutter
+- Dart
+- Google Gemini API
+- Material Design
+
+---
+
+## 📂 Project Structure
+
+```
+lib/
+├── core/
+├── features/
+├── services/
+├── widgets/
+├── screens/
+└── main.dart
+```
+
+---
+
+## ⚙️ Getting Started
+
+### Clone the repository
+
+```bash
+git clone git@github.com:ayankhan1111123-debug/PhysicsGPT.git
+```
+
+### Install dependencies
+
+```bash
+flutter pub get
+```
+
+### Run the application
+
+```bash
+flutter run
+```
+
+---
+
+## 📌 Roadmap
+
+- [x] GitHub repository setup
+- [x] Flutter project setup
+- [ ] Fix image loading issues
+- [ ] Complete home screen
+- [ ] Camera integration
+- [ ] Gallery integration
+- [ ] Gemini AI integration
+- [ ] Save solution history
+- [ ] Dark mode
+- [ ] Export solutions
+
+---
+
+## 🤝 Contributing
+
+Contributions, suggestions, and feedback are welcome.
+Feel free to fork the repository and open a pull request.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 👨‍💻 Author
+
+**Ayan Ali**
+
+Physics Student @ NUST
+
+Flutter Developer
+
+GitHub: https://github.com/ayankhan1111123-debug
