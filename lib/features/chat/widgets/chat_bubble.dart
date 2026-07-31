@@ -21,12 +21,10 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 8,
+        horizontal: 18,
+        vertical: 10,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,92 +35,100 @@ class ChatBubble extends StatelessWidget {
         children: [
           if (!isUser) _assistantAvatar(),
 
-          if (!isUser) const SizedBox(width: 10),
+          if (!isUser)
+            const SizedBox(width: 12),
 
           Flexible(
             child: Container(
-              padding: const EdgeInsets.all(16),
+              constraints: const BoxConstraints(
+                maxWidth: 700,
+              ),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: isUser
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(18),
+                    ? const Color(0xff2B2B2B)
+                    : const Color(0xff171717),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(22),
+                  topRight: const Radius.circular(22),
+                  bottomLeft: Radius.circular(
+                    isUser ? 22 : 6,
+                  ),
+                  bottomRight: Radius.circular(
+                    isUser ? 6 : 22,
+                  ),
+                ),
+                border: Border.all(
+                  color: Colors.white10,
+                ),
               ),
               child: Column(
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
                 children: [
-                  if (message.type ==
-                      MessageType.text)
-                    _buildMarkdown(theme),
 
-                  if (message.type ==
-                      MessageType.image)
+                  if (message.type == MessageType.text)
+                    _buildMarkdown(),
+
+                  if (message.type == MessageType.image)
                     _buildImage(),
 
-                  if (message.type ==
-                      MessageType.pdf)
+                  if (message.type == MessageType.pdf)
                     _buildPdf(),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
 
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment
-                            .spaceBetween,
                     children: [
+
                       Text(
                         _formatTime(
                           message.timestamp,
                         ),
-                        style: TextStyle(
+                        style: const TextStyle(
+                          color: Colors.white38,
                           fontSize: 11,
-                          color:
-                              Colors.grey.shade500,
                         ),
                       ),
 
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.copy,
-                              size: 18,
-                            ),
-                            onPressed: () async {
-                              await Clipboard.setData(
-                                ClipboardData(
-                                  text: message.content,
-                                ),
-                              );
+                      const Spacer(),
 
-                              if (context
-                                  .mounted) {
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Copied",
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-
-                          IconButton(
-                            icon: const Icon(
-                              Icons.share,
-                              size: 18,
+                      IconButton(
+                        splashRadius: 18,
+                        icon: const Icon(
+                          Icons.copy_rounded,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
+                        onPressed: () async {
+                          await Clipboard.setData(
+                            ClipboardData(
+                              text: message.content,
                             ),
-                            onPressed: () {
-                              Share.share(
-                                message.content,
-                              );
-                            },
-                          ),
-                        ],
+                          );
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(
+                              const SnackBar(
+                                content: Text("Copied"),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+
+                      IconButton(
+                        splashRadius: 18,
+                        icon: const Icon(
+                          Icons.share_rounded,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          Share.share(message.content);
+                        },
                       ),
                     ],
                   ),
@@ -132,39 +138,59 @@ class ChatBubble extends StatelessWidget {
           ),
 
           if (isUser)
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
 
-          if (isUser) _userAvatar(),
+          if (isUser)
+            _userAvatar(),
         ],
       ),
     );
   }
 
   Widget _assistantAvatar() {
-    return const CircleAvatar(
-      radius: 18,
-      child: Icon(Icons.smart_toy),
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Icon(
+        Icons.auto_awesome,
+        color: Colors.black,
+        size: 20,
+      ),
     );
   }
 
   Widget _userAvatar() {
-    return const CircleAvatar(
-      radius: 18,
-      child: Icon(Icons.person),
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: Color(0xff2D2D2D),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Icon(
+        Icons.person,
+        color: Colors.white,
+        size: 20,
+      ),
     );
   }
     Widget _buildImage() {
     if (message.imageFile == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(
-            Icons.image,
-            size: 60,
-          ),
-          const SizedBox(height: 8),
-          Text(message.content),
-        ],
+      return Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white10,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Icon(
+          Icons.image_outlined,
+          color: Colors.white,
+          size: 50,
+        ),
       );
     }
 
@@ -172,17 +198,19 @@ class ChatBubble extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           child: Image.file(
             File(message.imageFile!.path),
             fit: BoxFit.cover,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           message.content,
           style: const TextStyle(
+            color: Colors.white,
             fontWeight: FontWeight.w600,
+            fontSize: 15,
           ),
         ),
       ],
@@ -190,24 +218,35 @@ class ChatBubble extends StatelessWidget {
   }
 
   Widget _buildPdf() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Icon(
-          Icons.picture_as_pdf,
-          size: 60,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          message.pdfName ?? "PDF",
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.picture_as_pdf_rounded,
+            color: Colors.redAccent,
+            size: 42,
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              message.pdfName ?? "Physics Notes.pdf",
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildMarkdown(
-    ThemeData theme,
-  ) {
+  Widget _buildMarkdown() {
     final regex = RegExp(
       r'\$\$(.*?)\$\$',
       dotAll: true,
@@ -215,16 +254,13 @@ class ChatBubble extends StatelessWidget {
 
     if (regex.hasMatch(message.content)) {
       final latex =
-          regex.firstMatch(message.content)!
-              .group(1)!;
+          regex.firstMatch(message.content)!.group(1)!;
 
       return Math.tex(
         latex,
         textStyle: GoogleFonts.inter(
-          fontSize: 18,
-          color: isUser
-              ? Colors.white
-              : theme.colorScheme.onSurface,
+          fontSize: 20,
+          color: Colors.white,
         ),
       );
     }
@@ -235,23 +271,47 @@ class ChatBubble extends StatelessWidget {
       styleSheet: MarkdownStyleSheet(
         p: GoogleFonts.inter(
           fontSize: 16,
-          color: isUser
-              ? Colors.white
-              : theme.colorScheme.onSurface,
+          color: Colors.white,
+          height: 1.6,
+        ),
+        h1: GoogleFonts.inter(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+        ),
+        h2: GoogleFonts.inter(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
+        ),
+        h3: GoogleFonts.inter(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+        strong: GoogleFonts.inter(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        code: GoogleFonts.robotoMono(
+          color: Colors.greenAccent,
+          backgroundColor: Colors.white10,
+          fontSize: 14,
+        ),
+        blockquote: GoogleFonts.inter(
+          color: Colors.white70,
+          fontStyle: FontStyle.italic,
+        ),
+        listBullet: GoogleFonts.inter(
+          color: Colors.white,
         ),
       ),
     );
   }
 
-  String _formatTime(
-    DateTime date,
-  ) {
-    final h =
-        date.hour.toString().padLeft(2, '0');
-
-    final m =
-        date.minute.toString().padLeft(2, '0');
-
+  String _formatTime(DateTime date) {
+    final h = date.hour.toString().padLeft(2, '0');
+    final m = date.minute.toString().padLeft(2, '0');
     return "$h:$m";
   }
 }

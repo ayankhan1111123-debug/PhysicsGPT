@@ -28,12 +28,7 @@ class _MessageInputState extends State<MessageInput> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
         decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(
-              color: Color(0xffE5E7EB),
-            ),
-          ),
+          color: Colors.black,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -42,6 +37,7 @@ class _MessageInputState extends State<MessageInput> {
               onPressed: widget.onGallery,
               icon: const Icon(
                 Icons.photo_library_rounded,
+                color: Colors.white70,
               ),
             ),
 
@@ -49,19 +45,24 @@ class _MessageInputState extends State<MessageInput> {
               onPressed: widget.onCamera,
               icon: const Icon(
                 Icons.camera_alt_rounded,
+                color: Colors.white70,
               ),
             ),
 
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xffF3F4F6),
+                  color: const Color(0xff1E1E1E),
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: TextField(
                   controller: widget.controller,
                   minLines: 1,
                   maxLines: 6,
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                  cursorColor: Colors.white,
                   textInputAction: TextInputAction.send,
                   onSubmitted: (_) {
                     if (!widget.isLoading) {
@@ -69,7 +70,10 @@ class _MessageInputState extends State<MessageInput> {
                     }
                   },
                   decoration: const InputDecoration(
-                    hintText: "Ask any Physics question...",
+                    hintText: "Message PhysicsGPT...",
+                    hintStyle: TextStyle(
+                      color: Colors.white54,
+                    ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 18,
@@ -83,13 +87,11 @@ class _MessageInputState extends State<MessageInput> {
             const SizedBox(width: 8),
 
             Material(
-              color: Colors.blue,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(30),
               child: InkWell(
                 borderRadius: BorderRadius.circular(30),
-                onTap: widget.isLoading
-                    ? null
-                    : widget.onSend,
+                onTap: widget.isLoading ? null : widget.onSend,
                 child: SizedBox(
                   width: 52,
                   height: 52,
@@ -98,15 +100,14 @@ class _MessageInputState extends State<MessageInput> {
                         ? const SizedBox(
                             width: 22,
                             height: 22,
-                            child:
-                                CircularProgressIndicator(
+                            child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           )
                         : const Icon(
                             Icons.send_rounded,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                   ),
                 ),

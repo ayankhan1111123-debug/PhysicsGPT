@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import '../../history/screens/history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -12,15 +12,36 @@ import '../widgets/chat_bubble.dart';
 import '../widgets/message_input.dart';
 import '../widgets/typing_indicator.dart';
 import '../../../ai/services/ai_manager.dart';
+import '../../../database/conversation.dart';
+import '../../../database/conversation_repository.dart';
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String? initialPrompt;
+
+  const ChatScreen({
+    super.key,
+    this.initialPrompt,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  @override
+void initState() {
+  super.initState();
+
+  if (widget.initialPrompt != null &&
+      widget.initialPrompt!.trim().isNotEmpty) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.text = widget.initialPrompt!;
+      _sendMessage();
+    });
+  }
+}
   final AIManager _aiManager = AIManager.instance;
+  final ConversationRepository _conversationRepository =
+    ConversationRepository();
 
   final ImageService _imageService = ImageService();
 
@@ -153,7 +174,18 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _sendMessage() async {
     final question = _controller.text.trim();
 
-    if (question.isEmpty) return;
+if (question.isEmpty) return;
+
+await _conversationRepository.insertConversation(
+  Conversation(
+    title: question.length > 40
+        ? "${question.substring(0, 40)}..."
+        : question,
+    lastMessage: question,
+    updatedAt: DateTime.now(),
+  ),
+);
+
 
     final userMessage = ChatMessage(
       id: _uuid.v4(),
@@ -212,20 +244,31 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF8FAFC),
+     backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0,
         centerTitle: false,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: Colors.black,
+surfaceTintColor: Colors.black,
+ leading: IconButton(
+    icon: const Icon(Icons.menu_rounded),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const HistoryScreen(),
+        ),
+      );
+    },
+  ),
         title: const Row(
           children: [
             CircleAvatar(
               radius: 18,
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.white,
               child: Icon(
                 Icons.auto_awesome,
-                color: Colors.white,
+               color: Colors.black,
               ),
             ),
 
@@ -234,7 +277,7 @@ class _ChatScreenState extends State<ChatScreen> {
             const Text(
               "PhysicsGPT",
               style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -294,13 +337,13 @@ class _ChatScreenState extends State<ChatScreen> {
               width: 90,
               height: 90,
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.white,
                 borderRadius:
                     BorderRadius.circular(25),
               ),
               child: const Icon(
-                Icons.auto_awesome,
-                color: Colors.white,
+  Icons.auto_awesome,
+  color: Colors.black,
                 size: 50,
               ),
             ),
@@ -310,10 +353,11 @@ class _ChatScreenState extends State<ChatScreen> {
             const Text(
               "Welcome to PhysicsGPT",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+             style: TextStyle(
+  fontSize: 28,
+  fontWeight: FontWeight.bold,
+  color: Colors.white,
+),
             ),
 
             const SizedBox(height: 12),
@@ -322,7 +366,7 @@ class _ChatScreenState extends State<ChatScreen> {
               "Your AI Physics Assistant",
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.grey,
+                color: Colors.white70,
               ),
             ),
 
@@ -356,7 +400,7 @@ class _ChatScreenState extends State<ChatScreen> {
             const Text(
               "Start by asking any Physics question below.",
               style: TextStyle(
-                color: Colors.grey,
+                color: Colors.white,
               ),
             ),
           ],
@@ -374,7 +418,7 @@ class _ChatScreenState extends State<ChatScreen> {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xff161616),
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -388,11 +432,10 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundColor:
-                Colors.blue.withValues(alpha: 0.1),
+            backgroundColor: Colors.white12,
             child: Icon(
               icon,
-              color: Colors.blue,
+              color: Colors.white,
             ),
           ),
 
@@ -405,10 +448,11 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                style: const TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.bold,
+  color: Colors.white,
+), 
                 ),
 
                 const SizedBox(height: 4),
@@ -416,7 +460,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    color: Colors.grey,
+                    color: Colors.white70,
                   ),
                 ),
               ],

@@ -3,10 +3,40 @@ import 'package:flutter/material.dart';
 import '../../../core/design/app_colors.dart';
 import '../../../core/design/app_radius.dart';
 import '../../../core/design/app_spacing.dart';
-import '../../../core/design/app_text_styles.dart';
+import '../../chat/screens/chat_screen.dart';
 
-class SearchSection extends StatelessWidget {
+class SearchSection extends StatefulWidget {
   const SearchSection({super.key});
+
+  @override
+  State<SearchSection> createState() => _SearchSectionState();
+}
+
+class _SearchSectionState extends State<SearchSection> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _sendQuestion() {
+    final question = _controller.text.trim();
+
+    if (question.isEmpty) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatScreen(
+          initialPrompt: question,
+        ),
+      ),
+    );
+
+    _controller.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +50,21 @@ class SearchSection extends StatelessWidget {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Ask anything in Physics...",
-            style: AppTextStyles.bodyLarge.copyWith(
-              color: AppColors.textHint,
+          TextField(
+            controller: _controller,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+            minLines: 1,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              hintText: "Ask anything in Physics...",
+              hintStyle: TextStyle(
+                color: Colors.grey,
+              ),
+              border: InputBorder.none,
             ),
           ),
 
@@ -33,26 +72,31 @@ class SearchSection extends StatelessWidget {
 
           Row(
             children: [
-              _icon(Icons.camera_alt_outlined),
+              _buildIcon(Icons.camera_alt_outlined),
+
               const SizedBox(width: 18),
 
-              _icon(Icons.picture_as_pdf_outlined),
+              _buildIcon(Icons.picture_as_pdf_outlined),
+
               const SizedBox(width: 18),
 
-              _icon(Icons.mic_none_rounded),
+              _buildIcon(Icons.mic_none_rounded),
 
               const Spacer(),
 
-              Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.arrow_forward,
-                  color: Colors.black,
+              GestureDetector(
+                onTap: _sendQuestion,
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ],
@@ -62,7 +106,7 @@ class SearchSection extends StatelessWidget {
     );
   }
 
-  Widget _icon(IconData icon) {
+  Widget _buildIcon(IconData icon) {
     return Icon(
       icon,
       size: 24,
