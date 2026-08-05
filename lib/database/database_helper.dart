@@ -18,13 +18,34 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-
     final path = join(dbPath, 'physicsgpt.db');
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDatabase,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('DROP TABLE IF EXISTS messages');
+
+          await db.execute('''
+          CREATE TABLE messages(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversationId INTEGER NOT NULL,
+            role TEXT NOT NULL,
+            type TEXT NOT NULL,
+            content TEXT NOT NULL,
+            imagePath TEXT,
+            pdfName TEXT,
+            timestamp TEXT NOT NULL,
+            status TEXT NOT NULL,
+            FOREIGN KEY(conversationId)
+            REFERENCES conversations(id)
+            ON DELETE CASCADE
+          )
+          ''');
+        }
+      },
     );
   }
 
@@ -32,14 +53,32 @@ class DatabaseHelper {
     Database db,
     int version,
   ) async {
+
     await db.execute('''
-      CREATE TABLE conversations(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        lastMessage TEXT NOT NULL,
-        updatedAt TEXT NOT NULL,
-        isFavorite INTEGER NOT NULL DEFAULT 0
-      )
+    CREATE TABLE conversations(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      lastMessage TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      isFavorite INTEGER NOT NULL DEFAULT 0
+    )
+    ''');
+
+    await db.execute('''
+    CREATE TABLE messages(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      conversationId INTEGER NOT NULL,
+      role TEXT NOT NULL,
+      type TEXT NOT NULL,
+      content TEXT NOT NULL,
+      imagePath TEXT,
+      pdfName TEXT,
+      timestamp TEXT NOT NULL,
+      status TEXT NOT NULL,
+      FOREIGN KEY(conversationId)
+      REFERENCES conversations(id)
+      ON DELETE CASCADE
+    )
     ''');
   }
 }

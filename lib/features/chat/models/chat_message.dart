@@ -21,60 +21,92 @@ enum MessageStatus {
 class ChatMessage {
   final String id;
 
+  /// Nullable until saved into SQLite
+  final int? conversationId;
+
   final MessageRole role;
 
   final MessageType type;
 
   final String content;
 
-  final DateTime timestamp;
-
   final File? imageFile;
-
-  final File? pdfFile;
 
   final String? pdfName;
 
-  final bool isFavorite;
+  final DateTime timestamp;
 
   final MessageStatus status;
 
   const ChatMessage({
     required this.id,
+    this.conversationId,
     required this.role,
     required this.type,
     required this.content,
-    required this.timestamp,
     this.imageFile,
-    this.pdfFile,
     this.pdfName,
-    this.isFavorite = false,
+    required this.timestamp,
     this.status = MessageStatus.sent,
   });
 
   ChatMessage copyWith({
     String? id,
+    int? conversationId,
     MessageRole? role,
     MessageType? type,
     String? content,
-    DateTime? timestamp,
     File? imageFile,
-    File? pdfFile,
     String? pdfName,
-    bool? isFavorite,
+    DateTime? timestamp,
     MessageStatus? status,
   }) {
     return ChatMessage(
       id: id ?? this.id,
+      conversationId: conversationId ?? this.conversationId,
       role: role ?? this.role,
       type: type ?? this.type,
       content: content ?? this.content,
-      timestamp: timestamp ?? this.timestamp,
       imageFile: imageFile ?? this.imageFile,
-      pdfFile: pdfFile ?? this.pdfFile,
       pdfName: pdfName ?? this.pdfName,
-      isFavorite: isFavorite ?? this.isFavorite,
+      timestamp: timestamp ?? this.timestamp,
       status: status ?? this.status,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "conversationId": conversationId,
+      "role": role.name,
+      "type": type.name,
+      "content": content,
+      "imagePath": imageFile?.path,
+      "pdfName": pdfName,
+      "timestamp": timestamp.toIso8601String(),
+      "status": status.name,
+    };
+  }
+
+  factory ChatMessage.fromMap(Map<String, dynamic> map) {
+    return ChatMessage(
+      id: map["id"].toString(),
+      conversationId: map["conversationId"],
+      role: MessageRole.values.firstWhere(
+        (e) => e.name == map["role"],
+      ),
+      type: MessageType.values.firstWhere(
+        (e) => e.name == map["type"],
+      ),
+      content: map["content"] ?? "",
+      imageFile: map["imagePath"] != null
+          ? File(map["imagePath"])
+          : null,
+      pdfName: map["pdfName"],
+      timestamp: DateTime.parse(map["timestamp"]),
+      status: MessageStatus.values.firstWhere(
+        (e) => e.name == map["status"],
+        orElse: () => MessageStatus.sent,
+      ),
     );
   }
 }

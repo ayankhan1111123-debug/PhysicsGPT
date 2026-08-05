@@ -2,6 +2,7 @@ import 'dart:io';
 import '../../history/screens/history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import '../../../database/message_repository.dart';
 
 import '../../image_solver/services/image_service.dart';
 
@@ -42,6 +43,9 @@ void initState() {
   final AIManager _aiManager = AIManager.instance;
   final ConversationRepository _conversationRepository =
     ConversationRepository();
+    final MessageRepository _messageRepository = MessageRepository();
+
+int? _conversationId;
 
   final ImageService _imageService = ImageService();
 
@@ -91,9 +95,11 @@ void initState() {
       timestamp: DateTime.now(),
     );
 
-    setState(() {
-      _messages.add(imageMessage);
-    });
+   await _messageRepository.insertMessage(imageMessage);
+
+setState(() {
+  _messages.add(imageMessage);
+});
 
     _scrollToBottom();
 
@@ -114,9 +120,11 @@ void initState() {
       timestamp: DateTime.now(),
     );
 
-    setState(() {
-      _messages.add(imageMessage);
-    });
+    await _messageRepository.insertMessage(imageMessage);
+
+setState(() {
+  _messages.add(imageMessage);
+});
 
     _scrollToBottom();
 
@@ -147,9 +155,11 @@ void initState() {
         timestamp: DateTime.now(),
       );
 
-      setState(() {
-        _messages.add(aiMessage);
-      });
+     await _messageRepository.insertMessage(aiMessage);
+
+setState(() {
+  _messages.add(aiMessage);
+});
     } catch (e) {
       final errorMessage = ChatMessage(
         id: _uuid.v4(),
@@ -159,9 +169,11 @@ void initState() {
         timestamp: DateTime.now(),
       );
 
-      setState(() {
-        _messages.add(errorMessage);
-      });
+    await _messageRepository.insertMessage(errorMessage);
+
+setState(() {
+  _messages.add(errorMessage);
+});
     }
 
     setState(() {
@@ -176,24 +188,29 @@ void initState() {
 
 if (question.isEmpty) return;
 
-await _conversationRepository.insertConversation(
-  Conversation(
-    title: question.length > 40
-        ? "${question.substring(0, 40)}..."
-        : question,
-    lastMessage: question,
-    updatedAt: DateTime.now(),
-  ),
-);
+if (_conversationId == null) {
+  _conversationId =
+      await _conversationRepository.insertConversation(
+    Conversation(
+      title: question.length > 40
+          ? "${question.substring(0, 40)}..."
+          : question,
+      lastMessage: question,
+      updatedAt: DateTime.now(),
+    ),
+  );
+}
 
 
     final userMessage = ChatMessage(
-      id: _uuid.v4(),
-      role: MessageRole.user,
-            type: MessageType.text,
-      content: question,
-      timestamp: DateTime.now(),
-    );
+  id: _uuid.v4(),
+  conversationId: _conversationId,
+  role: MessageRole.user,
+  type: MessageType.text,
+  content: question,
+  timestamp: DateTime.now(),
+);
+await _messageRepository.insertMessage(userMessage);
 
     setState(() {
       _messages.add(userMessage);
@@ -210,12 +227,14 @@ await _conversationRepository.insertConversation(
 );
 
       final aiMessage = ChatMessage(
+  conversationId: _conversationId,
         id: _uuid.v4(),
         role: MessageRole.assistant,
         type: MessageType.text,
         content: reply,
         timestamp: DateTime.now(),
       );
+      await _messageRepository.insertMessage(aiMessage);
 
       setState(() {
         _messages.add(aiMessage);
