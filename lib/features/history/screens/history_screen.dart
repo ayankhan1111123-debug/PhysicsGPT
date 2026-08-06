@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../chat/screens/chat_screen.dart';
 import '../../../database/conversation.dart';
 import '../../../database/conversation_repository.dart';
 
@@ -89,7 +90,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
       body: Column(
         children: [
-
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
@@ -134,13 +134,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                           return Dismissible(
                             key: ValueKey(chat.id),
-
-                            direction:
-                                DismissDirection.endToStart,
+                            direction: DismissDirection.endToStart,
 
                             background: Container(
-                              margin:
-                                  const EdgeInsets.symmetric(
+                              margin: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 6,
                               ),
@@ -149,12 +146,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 borderRadius:
                                     BorderRadius.circular(18),
                               ),
-                              alignment:
-                                  Alignment.centerRight,
+                              alignment: Alignment.centerRight,
                               padding:
-                                  const EdgeInsets.only(
-                                right: 24,
-                              ),
+                                  const EdgeInsets.only(right: 24),
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.white,
@@ -172,66 +166,54 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 vertical: 6,
                               ),
                               child: Card(
-                                color: const Color(
-                                  0xff1A1A1A,
-                                ),
-                                shape:
-                                    RoundedRectangleBorder(
+                                color: const Color(0xff1A1A1A),
+                                shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.circular(
-                                    18,
-                                  ),
+                                      BorderRadius.circular(18),
                                 ),
                                 child: ListTile(
-                                  leading:
-                                      const CircleAvatar(
+                                  leading: const CircleAvatar(
                                     backgroundColor:
                                         Color(0xff2B2B2B),
                                     child: Icon(
-                                      Icons
-                                          .chat_bubble_outline,
+                                      Icons.chat_bubble_outline,
                                       color: Colors.white,
                                     ),
                                   ),
-
-                                  title: Text(
+                                                                    title: Text(
                                     chat.title,
-                                    style:
-                                        const TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
 
                                   subtitle: Text(
                                     chat.lastMessage,
                                     maxLines: 1,
-                                    overflow:
-                                        TextOverflow
-                                            .ellipsis,
-                                    style:
-                                        const TextStyle(
-                                      color:
-                                          Colors.white54,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white54,
                                     ),
                                   ),
 
                                   trailing: Text(
-                                    DateFormat(
-                                      "dd MMM",
-                                    ).format(
-                                      chat.updatedAt,
-                                    ),
-                                    style:
-                                        const TextStyle(
-                                      color:
-                                          Colors.white38,
+                                    DateFormat("dd MMM")
+                                        .format(chat.updatedAt),
+                                    style: const TextStyle(
+                                      color: Colors.white38,
                                     ),
                                   ),
 
                                   onTap: () {
-                                    // We'll load this conversation later.
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ChatScreen(
+                                          conversationId: chat.id,
+                                        ),
+                                      ),
+                                    );
                                   },
                                 ),
                               ),

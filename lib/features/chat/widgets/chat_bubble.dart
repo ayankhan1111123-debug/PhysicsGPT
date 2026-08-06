@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../../../core/widgets/markdown_message.dart';
+import '../models/chat_message.dart';
 
 import '../models/chat_message.dart';
 
@@ -246,68 +248,31 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildMarkdown() {
-    final regex = RegExp(
-      r'\$\$(.*?)\$\$',
-      dotAll: true,
-    );
+ Widget _buildMarkdown() {
+  final regex = RegExp(
+    r'\$\$(.*?)\$\$',
+    dotAll: true,
+  );
 
-    if (regex.hasMatch(message.content)) {
-      final latex =
-          regex.firstMatch(message.content)!.group(1)!;
+  if (regex.hasMatch(message.content)) {
+    final latex =
+        regex.firstMatch(message.content)!.group(1)!;
 
-      return Math.tex(
-        latex,
-        textStyle: GoogleFonts.inter(
-          fontSize: 20,
-          color: Colors.white,
-        ),
-      );
-    }
-
-    return MarkdownBody(
-      selectable: true,
-      data: message.content,
-      styleSheet: MarkdownStyleSheet(
-        p: GoogleFonts.inter(
-          fontSize: 16,
-          color: Colors.white,
-          height: 1.6,
-        ),
-        h1: GoogleFonts.inter(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),
-        h2: GoogleFonts.inter(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
-        ),
-        h3: GoogleFonts.inter(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),
-        strong: GoogleFonts.inter(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-        code: GoogleFonts.robotoMono(
-          color: Colors.greenAccent,
-          backgroundColor: Colors.white10,
-          fontSize: 14,
-        ),
-        blockquote: GoogleFonts.inter(
-          color: Colors.white70,
-          fontStyle: FontStyle.italic,
-        ),
-        listBullet: GoogleFonts.inter(
-          color: Colors.white,
-        ),
+    return Math.tex(
+      latex,
+      textStyle: GoogleFonts.inter(
+        fontSize: 20,
+        color: Colors.white,
       ),
     );
   }
+
+  return MarkdownMessage(
+    text: message.content,
+  );
+}
+
+    
 
   String _formatTime(DateTime date) {
     final h = date.hour.toString().padLeft(2, '0');

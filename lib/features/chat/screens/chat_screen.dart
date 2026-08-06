@@ -17,10 +17,12 @@ import '../../../database/conversation.dart';
 import '../../../database/conversation_repository.dart';
 class ChatScreen extends StatefulWidget {
   final String? initialPrompt;
+  final int? conversationId;
 
   const ChatScreen({
     super.key,
     this.initialPrompt,
+    this.conversationId,
   });
 
   @override
@@ -32,7 +34,13 @@ class _ChatScreenState extends State<ChatScreen> {
 void initState() {
   super.initState();
 
-  if (widget.initialPrompt != null &&
+  _conversationId = widget.conversationId;
+
+  if (_conversationId != null) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadConversation();
+    });
+  } else if (widget.initialPrompt != null &&
       widget.initialPrompt!.trim().isNotEmpty) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.text = widget.initialPrompt!;
@@ -40,12 +48,14 @@ void initState() {
     });
   }
 }
+
   final AIManager _aiManager = AIManager.instance;
   final ConversationRepository _conversationRepository =
     ConversationRepository();
     final MessageRepository _messageRepository = MessageRepository();
 
 int? _conversationId;
+bool _loadedConversation = false;
 
   final ImageService _imageService = ImageService();
 
@@ -79,6 +89,22 @@ int? _conversationId;
       );
     });
   }
+  Future<void> _loadConversation() async {
+  if (_loadedConversation || _conversationId == null) return;
+
+  _loadedConversation = true;
+
+  final messages = await _messageRepository.getMessages(
+    _conversationId!,
+  );
+
+  setState(() {
+    _messages.clear();
+    _messages.addAll(messages);
+  });
+
+  _scrollToBottom();
+}
 
   Future<void> _pickCameraImage() async {
     final File? image =

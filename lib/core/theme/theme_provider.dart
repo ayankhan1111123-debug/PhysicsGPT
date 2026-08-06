@@ -10,10 +10,11 @@ class ThemeProvider extends ChangeNotifier {
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   ThemeProvider() {
-    _loadTheme();
+    loadTheme();
   }
 
-  Future<void> _loadTheme() async {
+  /// Public method so main.dart can reload the saved theme.
+  Future<void> loadTheme() async {
     _themeMode = await ThemePreferences.loadThemeMode();
     notifyListeners();
   }

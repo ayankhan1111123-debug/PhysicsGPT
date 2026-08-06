@@ -22,15 +22,15 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDatabase,
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
+        if (oldVersion < 3) {
           await db.execute('DROP TABLE IF EXISTS messages');
 
           await db.execute('''
           CREATE TABLE messages(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
             conversationId INTEGER NOT NULL,
             role TEXT NOT NULL,
             type TEXT NOT NULL,
@@ -53,7 +53,6 @@ class DatabaseHelper {
     Database db,
     int version,
   ) async {
-
     await db.execute('''
     CREATE TABLE conversations(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,7 +65,7 @@ class DatabaseHelper {
 
     await db.execute('''
     CREATE TABLE messages(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id TEXT PRIMARY KEY,
       conversationId INTEGER NOT NULL,
       role TEXT NOT NULL,
       type TEXT NOT NULL,

@@ -12,10 +12,13 @@ class MessageRepository {
     await db.insert(
       'messages',
       message.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<List<ChatMessage>> getMessages(int conversationId) async {
+  Future<List<ChatMessage>> getMessages(
+    int conversationId,
+  ) async {
     final db = await _helper.database;
 
     final maps = await db.query(
@@ -25,10 +28,14 @@ class MessageRepository {
       orderBy: 'timestamp ASC',
     );
 
-    return maps.map((e) => ChatMessage.fromMap(e)).toList();
+    return maps
+        .map((e) => ChatMessage.fromMap(e))
+        .toList();
   }
 
-  Future<void> deleteMessages(int conversationId) async {
+  Future<void> deleteMessages(
+    int conversationId,
+  ) async {
     final db = await _helper.database;
 
     await db.delete(
@@ -36,5 +43,11 @@ class MessageRepository {
       where: 'conversationId = ?',
       whereArgs: [conversationId],
     );
+  }
+
+  Future<void> deleteAllMessages() async {
+    final db = await _helper.database;
+
+    await db.delete('messages');
   }
 }
